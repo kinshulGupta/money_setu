@@ -1,0 +1,601 @@
+/* ══════════════════════════════════════════════════════════════════
+   Sectors gallery band — two rows of pictures drifting past each other
+   in opposite directions. Peer hover, cursor tilt, morphing full view.
+   Everything is sized in em off .ig-stage's font-size (the one scale
+   unit). Restyled to the Money Setu palette: obsidian, jade, hairline.
+   ══════════════════════════════════════════════════════════════════ */
+
+.ig-section {
+  background: #0b0f12;
+  color: #f8fafc;
+  overflow: hidden;
+  min-height: 720px;
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+/* the query container sits INSIDE the section so the full view can be a
+   sibling of it and still cover the page */
+.ig-shell {
+  container: ig-root / inline-size;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+/* THE SCALE UNIT */
+.ig-stage {
+  /* stacked layout makes the pictures larger; the >=600px layer resets to 1 */
+  --ig-k: 1.5;
+  /* the band's own container edges, matched to the page content column */
+  --ig-inset: max(1.5rem, calc((100cqi - 1280px) / 2 + 2rem));
+  font-size: clamp(9px, 5.5px + 0.548cqi, 16px);
+  font-family: var(--font-body);
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ---------- bar ---------- */
+.ig-bar {
+  position: absolute;
+  top: 1.6875em;
+  left: var(--ig-inset);
+  right: var(--ig-inset);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 1em;
+  min-height: 3.413em;
+}
+
+.ig-bar-link {
+  font-family: var(--font-heading);
+  font-size: 1.25em;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #cbd5e1;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-top: 0;
+  transition: color 0.25s ease;
+}
+.ig-bar-link:hover,
+.ig-bar-link:focus-visible {
+  color: #34d399;
+}
+
+.ig-globe-wrap {
+  display: block;
+  width: 3.521em;
+  height: 3.413em;
+  --ig-gy: 3.394em;
+  --ig-gx: calc(50cqi - 4.6915em);
+  color: #10b981;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+  animation: ig-globe-land 0.95s cubic-bezier(0.66, 0, 0.24, 1) 1.14s backwards;
+}
+.ig-globe-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: ig-globe-draw 1.2s cubic-bezier(0.34, 0.03, 0.22, 1) backwards;
+}
+
+/* narrow: the four links fold into a panel under the burger */
+.ig-links {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  display: grid;
+  justify-items: end;
+  gap: 0.9em;
+  padding-top: 1.1em;
+  text-align: right;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.4em);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    visibility 0s linear 0.28s;
+  z-index: 4;
+}
+.ig-bar.is-ig-menu .ig-links {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s, 0s, 0s;
+}
+
+.ig-burger {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  width: 2.6em;
+  height: 2.6em;
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  gap: 0.5em;
+  cursor: pointer;
+  color: #e2e8f0;
+}
+.ig-burger span {
+  display: block;
+  width: 2.2em;
+  height: 0.125em;
+  background: currentColor;
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.2s ease;
+}
+.ig-bar.is-ig-menu .ig-burger span:first-child {
+  transform: translateY(0.3125em) rotate(45deg);
+}
+.ig-bar.is-ig-menu .ig-burger span:last-child {
+  transform: translateY(-0.3125em) rotate(-45deg);
+}
+.ig-burger:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 3px;
+}
+
+/* ---------- the two rows ---------- */
+.ig-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4.406em;
+}
+.ig-row {
+  overflow-x: clip; /* clips the strip at both edges */
+  overflow-y: visible; /* never clip the bottom of the names */
+  width: 100%;
+}
+.ig-track {
+  display: flex;
+  width: max-content;
+  animation: ig-drift 48s linear infinite;
+  animation-delay: 2.6s;
+  will-change: transform;
+}
+.ig-row--back .ig-track {
+  animation-direction: reverse;
+}
+
+/* -50% is exactly one .ig-set including its trailing gap */
+@keyframes ig-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ig-set {
+  display: flex;
+  align-items: flex-end; /* the shared baseline */
+  gap: 5.5625em;
+  padding-right: 5.5625em; /* trailing gap so the loop is seamless */
+}
+
+.ig-row:hover .ig-track,
+.ig-row:focus-within .ig-track {
+  animation-play-state: paused;
+}
+
+/* ---------- a card ---------- */
+.ig-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1em;
+  flex: 0 0 auto;
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transform-origin: center bottom;
+  perspective: 620px;
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ig-card:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 6px;
+}
+
+/* the peer hover — the hovered card grows, every other card in BOTH rows
+   shrinks, blurs and fades */
+.ig-rows:has(.ig-card:hover) .ig-card {
+  transform: scale(0.93);
+  filter: blur(2.5px);
+  opacity: 0.45;
+}
+.ig-rows:has(.ig-card:hover) .ig-card:hover {
+  transform: scale(1.08);
+  filter: blur(0);
+  opacity: 1;
+}
+.ig-rows:has(.ig-card:hover) .ig-track {
+  animation-play-state: paused;
+}
+
+.ig-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+  min-width: 0;
+  align-items: flex-start; /* keeps the city span word-width, not name-width */
+}
+.ig-city {
+  font-family: var(--font-mono);
+  font-size: max(11px, 0.75em);
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #94a3b8;
+}
+.ig-name {
+  font-family: var(--font-heading);
+  font-size: 2.6em;
+  font-weight: 600;
+  /* the mockup's .78 was tuned to Bebas Neue; Manrope needs cap height */
+  line-height: 1;
+  letter-spacing: -0.015em;
+  margin: 0;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: #f8fafc;
+}
+
+.ig-frame {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  line-height: 0;
+  order: -1; /* picture above the words while narrow */
+  border-radius: 2px;
+  width: calc(var(--ig-w) * var(--ig-k, 1));
+  height: calc(var(--ig-h) * var(--ig-k, 1));
+  transform: rotateX(var(--ig-rx, 0deg)) rotateY(var(--ig-ry, 0deg));
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ig-frame .ig-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ig-frame.is-ig-tilting {
+  transition: transform 0.09s linear;
+  will-change: transform;
+}
+/* hairline + inner wash so the photography sits in the page */
+.ig-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(to top, rgba(11, 15, 18, 0.34), transparent 55%);
+  pointer-events: none;
+}
+
+/* ---------- the entrance ---------- */
+.ig-globe-icon {
+  transform-origin: 50% 50%;
+}
+@keyframes ig-globe-draw {
+  from {
+    clip-path: circle(0% at 50% 50%);
+    transform: rotate(-16deg) scale(0.86);
+  }
+  to {
+    clip-path: circle(150% at 50% 50%);
+    transform: rotate(0deg) scale(1);
+  }
+}
+@keyframes ig-globe-land {
+  from {
+    transform: translate(var(--ig-gx, 0px), calc(360px - var(--ig-gy, 4.247em))) scale(3.4);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.ig-bar-link,
+.ig-burger,
+.ig-rows {
+  animation: ig-emerge 0.95s cubic-bezier(0.22, 0.61, 0.36, 1) 1.78s backwards;
+}
+@keyframes ig-emerge {
+  from {
+    opacity: 0;
+    filter: blur(18px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+.ig-section.is-ig-entered .ig-burger {
+  animation: none;
+}
+
+/* ---------- full view ---------- */
+.ig-section.is-ig-open .ig-stage {
+  pointer-events: none;
+}
+.ig-section.is-ig-open .ig-card,
+.ig-section.is-ig-open .ig-bar {
+  filter: blur(2.5px);
+  opacity: 0.45;
+}
+.ig-section.is-ig-open .ig-track {
+  animation-play-state: paused;
+}
+
+.ig-full {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25em;
+  font-size: 16px;
+  font-family: var(--font-body);
+  visibility: hidden;
+  z-index: 40;
+}
+.ig-full::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 11, 14, 0.9);
+  opacity: 0;
+  transition: opacity 0.52s ease;
+}
+.ig-section.is-ig-open .ig-full {
+  visibility: visible;
+}
+.ig-section.is-ig-open .ig-full::before {
+  opacity: 1;
+}
+.ig-section.is-ig-closing .ig-full::before,
+.ig-section.is-ig-closing .ig-full-close {
+  opacity: 0;
+}
+
+.ig-full-art {
+  height: 62%;
+  max-width: 90%;
+  aspect-ratio: var(--ig-ar, 1.5);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 2px;
+  will-change: transform;
+}
+.ig-full-art .ig-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ig-full-cap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625em;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.ig-full-city,
+.ig-full-name {
+  will-change: transform;
+}
+.ig-card.is-ig-source {
+  visibility: hidden;
+}
+.ig-full-city {
+  font-family: var(--font-mono);
+  font-size: max(11px, 0.75em);
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.ig-full-name {
+  font-family: var(--font-heading);
+  font-size: 2.6em;
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-transform: uppercase;
+  color: #f8fafc;
+}
+
+.ig-full-close {
+  position: absolute;
+  top: calc(16px - 0.65em);
+  right: calc(16px - 0.65em);
+  width: 2.75em;
+  height: 2.75em;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  color: #e2e8f0;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.22s;
+}
+.ig-section.is-ig-open .ig-full-close {
+  opacity: 0.75;
+}
+.ig-section.is-ig-open .ig-full-close:hover,
+.ig-section.is-ig-open .ig-full-close:focus-visible {
+  opacity: 1;
+  transition-delay: 0s;
+}
+.ig-full-close:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 2px;
+}
+.ig-full-close svg {
+  width: 1.45em;
+  height: 1.45em;
+  display: block;
+}
+
+/* ---------- caption bottom-left ---------- */
+.ig-caption {
+  position: absolute;
+  left: var(--ig-inset);
+  bottom: 1.6875em;
+  display: none;
+  font-family: var(--font-mono);
+  font-size: max(9px, 0.7em);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+/* ═══════════════ OPTION 2 · CURTAIN (shipped, not active) ═══════════════ */
+[data-ig-reveal="curtain"] .ig-full {
+  display: block;
+  background: #0b0f12;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.78s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.is-ig-open[data-ig-reveal="curtain"] .ig-full {
+  clip-path: inset(0 0 0 0);
+}
+.is-ig-closing[data-ig-reveal="curtain"] .ig-full {
+  clip-path: inset(0 0 100% 0);
+}
+[data-ig-reveal="curtain"] .ig-full-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+[data-ig-reveal="curtain"] .ig-full-cap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.35em;
+  padding: 1.6875em 2.931em 4em;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+  z-index: 2;
+}
+[data-ig-reveal="curtain"] .ig-full-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(8, 11, 14, 0.55), transparent 45%);
+}
+[data-ig-reveal="curtain"] .ig-full::before {
+  display: none;
+}
+.ig-section.is-ig-open[data-ig-reveal="curtain"] .ig-card {
+  filter: none;
+  opacity: 1;
+}
+
+/* ═══════════════ the one structural switch — 600px ═══════════════ */
+@container ig-root (width >= 600px) {
+  .ig-links {
+    display: contents;
+    visibility: visible;
+  }
+  .ig-links > :nth-child(1) {
+    order: 1;
+  }
+  .ig-links > :nth-child(2) {
+    order: 2;
+  }
+  .ig-globe-wrap {
+    order: 3;
+    --ig-gx: 0px;
+    width: 5.281em;
+    height: 5.119em;
+    --ig-gy: 4.247em;
+  }
+  .ig-links > :nth-child(3) {
+    order: 4;
+  }
+  .ig-links > :nth-child(4) {
+    order: 5;
+  }
+  .ig-burger {
+    display: none;
+  }
+  .ig-bar {
+    align-items: flex-start;
+    min-height: 5.125em;
+  }
+  .ig-bar-link {
+    padding-top: 0.8em;
+  }
+
+  .ig-card {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0.875em;
+  }
+  .ig-frame {
+    order: 0;
+  }
+  .ig-text {
+    gap: 0.6em;
+  }
+  .ig-stage {
+    --ig-k: 1;
+  }
+  .ig-caption {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-globe-wrap,
+  .ig-globe-icon,
+  .ig-bar-link,
+  .ig-burger,
+  .ig-rows {
+    animation: none;
+  }
+  .ig-track {
+    animation-delay: 0s;
+  }
+}

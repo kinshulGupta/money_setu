@@ -1,0 +1,314 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 200 25% 6%;
+    --foreground: 210 20% 98%;
+    --card: 204 22% 10%;
+    --card-foreground: 210 20% 98%;
+    --popover: 204 22% 10%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 160 60% 5%;
+    --secondary: 207 21% 15%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 207 21% 15%;
+    --muted-foreground: 215 19% 65%;
+    --accent: 207 21% 15%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 207 19% 16%;
+    --input: 207 19% 20%;
+    --ring: 160 84% 39%;
+    --chart-1: 160 84% 39%;
+    --chart-2: 43 32% 64%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 215 19% 65%;
+    --chart-5: 160 60% 52%;
+    --radius: 0.75rem;
+    --font-heading: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --jade: #10b981;
+    --champagne: #c5a880;
+    --sidebar-background: 204 22% 10%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 160 60% 5%;
+    --sidebar-accent: 207 21% 15%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 207 19% 16%;
+    --sidebar-ring: 160 84% 39%;
+  }
+
+  .dark {
+    --background: 200 25% 6%;
+    --foreground: 210 20% 98%;
+    --card: 204 22% 10%;
+    --popover: 204 22% 10%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 160 60% 5%;
+    --secondary: 207 21% 15%;
+    --muted: 207 21% 15%;
+    --muted-foreground: 215 19% 65%;
+    --accent: 207 21% 15%;
+    --border: 207 19% 16%;
+    --input: 207 19% 20%;
+    --ring: 160 84% 39%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgba(16, 185, 129, 0.28);
+    color: #f9fafb;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  /* 40px geometric ambient mesh */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .bg-grid-fade {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 15%, transparent 78%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 15%, transparent 78%);
+  }
+
+  .glass-machined {
+    background: rgba(20, 26, 31, 0.72);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ---------- staggered scroll reveal ---------- */
+.ms-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.ms-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- cursor-tracking spotlight ---------- */
+.ms-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.ms-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(
+    320px circle at var(--mouse-x, 50%) var(--mouse-y, 0%),
+    rgba(16, 185, 129, 0.16),
+    transparent 62%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.ms-spotlight:hover::before {
+  opacity: 1;
+}
+.ms-spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- range sliders ---------- */
+.ms-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #10b981 0%,
+    #34d399 var(--fill, 50%),
+    rgba(255, 255, 255, 0.12) var(--fill, 50%),
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+.ms-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  background: #f9fafb;
+  border: 3px solid #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.ms-range:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 0 7px rgba(16, 185, 129, 0.18);
+}
+.ms-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 7px rgba(16, 185, 129, 0.28);
+}
+.ms-range::-moz-range-thumb {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  background: #f9fafb;
+  border: 3px solid #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
+}
+.ms-range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- animations ---------- */
+@keyframes ms-beacon {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.6); }
+}
+.ms-beacon {
+  animation: ms-beacon 2.4s ease-in-out infinite;
+}
+
+@keyframes ms-beam {
+  0% { transform: translateX(-20%); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+.ms-beam {
+  animation: ms-beam 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes ms-rise {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ms-rise {
+  animation: ms-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ms-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.ms-breathe {
+  animation: ms-breathe 4s ease-in-out infinite;
+}
+
+@keyframes ms-drawer-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ms-drawer-in {
+  animation: ms-drawer-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ---------- credential marquee ---------- */
+@keyframes ms-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.ms-marquee {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.ms-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: ms-marquee 38s linear infinite;
+}
+.ms-marquee:hover .ms-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ---------- slow image scan across photography ---------- */
+@keyframes ms-scan {
+  0% { transform: translateY(-120%); opacity: 0; }
+  35% { opacity: 0.9; }
+  100% { transform: translateY(520%); opacity: 0; }
+}
+.ms-scan {
+  animation: ms-scan 7.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ---------- soft ring pulse on live markers ---------- */
+@keyframes ms-ring {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.ms-ring {
+  animation: ms-ring 2.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .ms-beam,
+  .ms-beacon,
+  .ms-breathe,
+  .ms-rise,
+  .ms-drawer-in,
+  .ms-scan,
+  .ms-ring,
+  .ms-marquee-track {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

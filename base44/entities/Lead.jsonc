@@ -1,0 +1,122 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "title": "Lead",
+  "description": "Enquiry submitted through the Money Setu website or the client desk.",
+  "properties": {
+    "reference": {
+      "type": "string",
+      "description": "Short reference code shown to the applicant"
+    },
+    "full_name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "persona": {
+      "type": "string",
+      "enum": [
+        "msme",
+        "salaried",
+        "startup",
+        "professional",
+        "nri"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "pink",
+        "yellow",
+        "gray"
+      ],
+      "default": "msme"
+    },
+    "service": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "amount": {
+      "type": "number",
+      "description": "Indicative requirement in INR"
+    },
+    "message": {
+      "type": "string",
+      "maxLength": 1200
+    },
+    "consent": {
+      "type": "boolean",
+      "default": false,
+      "description": "DPDP Act 2023 consent captured at submission"
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 40,
+      "default": "website"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "docs_pending",
+        "underwriting",
+        "sanctioned",
+        "closed",
+        "dropped"
+      ],
+      "enumColors": [
+        "blue",
+        "yellow",
+        "yellow",
+        "purple",
+        "green",
+        "gray",
+        "red"
+      ],
+      "default": "new"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "full_name",
+    "email",
+    "phone",
+    "service"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
